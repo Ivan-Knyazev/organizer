@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная - Organizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Organizer</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="weather.html">Погода</a></li>
+                    <li><a href="notes.html">Заметки</a></li>
+                    <li><a href="knowledge_base.html">База знаний</a></li>
+                    <li><a href="profile.html">Профиль</a></li>
+                    <li><a href="auth.html">Войти</a></li>
+                    <li><a href="#">Выйти</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h1>Текущая информация</h1>
+            
+            <div class="intro-text">
+                <p>Добро пожаловать в ваш личный Organizer!</p>
+                <p><i>*Для неавторизованных пользователей будет доступна только Погода*</i></p>
+            </div>
+
+            <div class="module-summary-grid">
+                <a href="weather.html" class="card-link">
+                    <div class="card module-card">
+                        <h3 class="card-link-indicator">Погода</h3>
+                        <p>[Москва]</p>
+                        <p>+15°C, Облачно</p>
+                    </div>
+                </a>
+
+                <a href="notes.html" class="card-link">
+                     <div class="card module-card">
+                        <h3 class="card-link-indicator">Заметки</h3>
+                        <p>Последняя заметка:</p>
+                        <p>"Написать frontend..."</p>
+                        <!-- <p>Всего заметок: XXX</p> -->
+                    </div>
+                </a>
+
+                 <a href="knowledge_base.html" class="card-link">
+                    <div class="card module-card">
+                        <h3 class="card-link-indicator">База знаний</h3>
+                        <p>Сохранено ссылок: 42</p>
+                    </div>
+                 </a>
+
+                 <!-- В разработке -->
+                 <div class="card module-card" style="opacity: 0.5;">
+                    <h3>Блог (Скоро)</h3>
+                    <p>Ваш личный блог</p>
+                </div>
+                 <div class="card module-card" style="opacity: 0.5;">
+                    <h3>Файлы (Скоро)</h3>
+                    <p>Доступ к личному S3 хранилищу</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Organizer</p>
+    </footer>
+</body>
+</html>
