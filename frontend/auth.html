@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Organizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+         <div class="nav-container">
+            <a href="index.html" class="logo">Organizer</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">На главную</a></li>
+                    <li><a href="weather.html">Погода</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container auth-container">
+
+            <!-- Форма входа -->
+            <section class="auth-form-section">
+                <h2>Вход</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Логин (E-mail)</label>
+                        <input type="email" id="login-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Пароль</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+                    <div class="error-message" id="login-error" style="display: none;">failed login</div>
+                </form>
+
+                <a href="register.html">
+                    <div class="auth-toggle">
+                        <button class="btn btn-link">Нет аккаунта? Зарегистрироваться</button>
+                    </div>
+                </a>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Organizer</p>
+    </footer>
+</body>
+</html>
