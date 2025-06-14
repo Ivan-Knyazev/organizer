@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заметки - Organizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+     <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Organizer</a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Главная</a></li>
+                    <li><a href="weather.html">Погода</a></li>
+                    <li><a href="notes.html">Заметки</a></li>
+                    <li><a href="knowledge_base.html">База знаний</a></li>
+                    <li><a href="profile.html">Профиль</a></li>
+                    <li><a href="#">Выйти</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <h1>Заметки</h1>
+
+            <div class="notes-actions">
+                <button class="btn btn-primary" id="create-note-btn">Создать новую заметку</button>
+                <!-- <button class="btn btn-primary" id="export-notes-btn">Выгрузить заметки</button> -->
+                <!-- TODO: Добавить поля для выбора периода выгрузки -->
+            </div>
+
+            <!-- Секция для создания/редактирования (может быть скрыта/показана JS) -> style="display: none;" -->
+            <div class="note-editor card" id="note-editor-section">
+                 <h3>Редактор заметки</h3>
+                 <div class="form-group">
+                    <label for="note-title">Заголовок</label>
+                    <input type="text" id="note-title" placeholder="Название заметки">
+                 </div>
+                 <div class="form-group">
+                     <label for="note-content-area">Текст заметки</label>
+                    <!-- toolbar -->
+                    <div class="note-editor-toolbar">
+                         <button title="Жирный"><b>Ж</b></button>
+                         <button title="Курсив"><i>К</i></button>
+                         <button title="Курсив"><div class="highlight">Ч</div></button>
+                         <!-- Другие кнопки форматирования -->
+                    </div>
+                    <textarea id="note-content-area" class="note-editor-content" placeholder="Введите текст вашей заметки..."></textarea>
+                    <!-- <div id="note-content-area" class="note-editor-content" contenteditable="true"></div> -->
+                 </div>
+                 <button class="btn btn-success" id="save-note-btn">Сохранить</button>
+                 <button class="btn btn-secondary" id="cancel-note-btn">Отмена</button>
+            </div>
+
+
+            <!-- <h2>Все заметки:</h2> -->
+            <div id="notes-list">
+                <!-- Заметки будут загружены сюда -->
+
+                <div class="card note-item">
+                    <div class="note-content">
+                        <h3>Сделать тесты по ИнфоБезу</h3>
+                        <p>Тест1, <strong>Тест2</strong>, <em>Тест4</em>.</p>
+                        <small>Дата: 2025-04-01 10:30</small>
+                    </div>
+                    <div class="note-actions">
+                        <button class="btn btn-primary btn-small">Редактировать</button>
+                        <button class="btn btn-danger btn-small">Удалить</button>
+                    </div>
+                </div>
+
+                 <div class="card note-item">
+                    <div class="note-content">
+                        <h3>Идеи для органайзера</h3>
+                        <p>Идеи для проекта Organizer: добавить <strong>календарь</strong> и <em>напоминания</em>.</p>
+                        <small>Дата: 2025-04-01 10:30</small>
+                    </div>
+                     <div class="note-actions">
+                        <button class="btn btn-primary btn-small">Редактировать</button>
+                        <button class="btn btn-danger btn-small">Удалить</button>
+                    </div>
+                </div>
+
+                <div class="card note-item">
+                    <div class="note-content">
+                        <h3>Только заголовок</h3>
+                        <small>Дата: 2025-04-01 10:30</small>
+                    </div>
+                    <div class="note-actions">
+                         <button class="btn btn-primary btn-small">Редактировать</button>
+                         <button class="btn btn-danger btn-small">Удалить</button>
+                    </div>
+                </div>
+
+                <div class="card note-item">
+                    <div class="note-content">
+                        <p>Просто текстовая заметка без форматирования.</p>
+                         <small>Дата: 2025-04-01 10:30</small>
+                    </div>
+                    <div class="note-actions">
+                         <button class="btn btn-primary btn-small">Редактировать</button>
+                         <button class="btn btn-danger btn-small">Удалить</button>
+                    </div>
+                </div>
+
+                <!-- ... другие заметки ... -->
+
+                 <p id="notes-loading" style="display: none;">Загрузка заметок...</p>
+                 <p id="notes-empty" style="display: none;">У вас пока нет заметок.</p>
+                 <div class="error-message" id="notes-error" style="display: none;">Ошибка загрузки заметок &#128575;</div>
+            </div>
+             <button class="btn btn-link" id="load-more-notes" style="margin-top: 15px;">Загрузить еще</button>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Organizer</p>
+    </footer>
+</body>
+</html>

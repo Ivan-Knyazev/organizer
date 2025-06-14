@@ -1,0 +1,727 @@
+basePath: /api
+definitions:
+  handlers.ChangePasswordInput:
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        minLength: 6
+        type: string
+    required:
+    - currentPassword
+    - newPassword
+    type: object
+  handlers.CreateKnowledgeLinkInput:
+    properties:
+      title:
+        type: string
+      url:
+        type: string
+    required:
+    - url
+    type: object
+  handlers.CreateNoteInput:
+    properties:
+      content:
+        description: Content is required
+        type: string
+      title:
+        type: string
+    required:
+    - content
+    type: object
+  handlers.LoginInput:
+    properties:
+      email:
+        example: user@example.com
+        type: string
+      password:
+        example: password123
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.PaginatedNotesResponse:
+    properties:
+      notes:
+        description: Массив заметок
+        items:
+          $ref: '#/definitions/models.Note'
+        type: array
+      totalCount:
+        description: Общее количество заметок, подходящих под критерии (до пагинации)
+        example: 100
+        type: integer
+    type: object
+  handlers.RegisterInput:
+    properties:
+      age:
+        example: 30
+        type: integer
+      contacts:
+        example: "+1234567890"
+        type: string
+      email:
+        example: user@example.com
+        type: string
+      fullname:
+        example: John Doe
+        type: string
+      password:
+        example: password123
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handlers.UpdateNoteInput:
+    properties:
+      content:
+        type: string
+      title:
+        type: string
+    type: object
+  handlers.UpdateUserProfileInput:
+    properties:
+      age:
+        type: integer
+      contacts:
+        type: string
+      fullname:
+        type: string
+    type: object
+  handlers.UserAuthResponse:
+    properties:
+      token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/models.User'
+        description: User model without PasswordHash
+    type: object
+  models.KnowledgeLink:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+      userId:
+        type: integer
+    type: object
+  models.Note:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      date:
+        description: Compatibility with frontend mock
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        description: Foreign key
+        type: integer
+    type: object
+  models.User:
+    properties:
+      age:
+        type: integer
+      contacts:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      fullname:
+        type: string
+      id:
+        type: integer
+      telegramHash:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.WeatherResponse:
+    properties:
+      averageTemp:
+        type: number
+      city:
+        type: string
+      sources:
+        items:
+          $ref: '#/definitions/models.WeatherSource'
+        type: array
+    type: object
+  models.WeatherSource:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      temp:
+        description: Temperature in Celsius
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: kiv.426@google.com
+    name: API Support Team
+    url: https://www.example.com/support
+  description: This is the API for the Organizer application, providing a way to manage
+    personal productivity modules.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Organizer API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns a JWT token upon successful login.
+      parameters:
+      - description: User Login Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully logged in
+          schema:
+            $ref: '#/definitions/handlers.UserAuthResponse'
+        "400":
+          description: 'Validation error or invalid input (e.g., {\"error\": \"Invalid
+            input: ...\"})'
+          schema:
+            type: object
+        "401":
+          description: 'Invalid credentials (e.g., {\"error\": \"Invalid credentials\"})'
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Database error
+            finding user\"})'
+          schema:
+            type: object
+      summary: Log in an existing user
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account and returns a JWT token.
+      parameters:
+      - description: User Registration Data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully registered
+          schema:
+            $ref: '#/definitions/handlers.UserAuthResponse'
+        "400":
+          description: 'Validation error or invalid input (e.g., {\"error\": \"Invalid
+            input: Key: ''RegisterInput.Email'' Error:Field validation for ''Email''
+            failed on the ''email'' tag\"})'
+          schema:
+            type: object
+        "409":
+          description: 'User with this email already exists (e.g., {\"error\": \"User
+            with this email already exists\"})'
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to hash
+            password\"})'
+          schema:
+            type: object
+      summary: Register a new user
+      tags:
+      - auth
+  /auth/validate-token:
+    post:
+      description: Validates the provided JWT and returns user information if valid.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data for valid token
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: 'Unauthorized or invalid token (e.g., {\"error\": \"Unauthorized
+            or invalid token\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Validate JWT Token and get user info
+      tags:
+      - auth
+  /knowledge-links:
+    get:
+      description: Retrieves a list of knowledge links for the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.KnowledgeLink'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {"error": "Failed to retrieve
+            knowledge links"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all knowledge links for the authenticated user
+      tags:
+      - knowledge-links
+    post:
+      consumes:
+      - application/json
+      description: Add a new knowledge link for the authenticated user
+      parameters:
+      - description: Knowledge Link data
+        in: body
+        name: link
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateKnowledgeLinkInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.KnowledgeLink'
+        "400":
+          description: 'Invalid input (e.g., {"error": "Invalid input: ..."})'
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {"error": "Failed to create knowledge
+            link"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new knowledge link
+      tags:
+      - knowledge-links
+  /knowledge-links/{id}:
+    delete:
+      description: Deletes a specific knowledge link by its ID, if it belongs to the
+        authenticated user
+      parameters:
+      - description: Knowledge Link ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Knowledge link deleted successfully (e.g., {"message": "Knowledge
+            link deleted successfully"})'
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "404":
+          description: Knowledge link not found or access denied
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {"error": "Failed to delete knowledge
+            link"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a knowledge link by ID
+      tags:
+      - knowledge-links
+  /notes:
+    get:
+      description: Retrieves a paginated list of notes for the current user
+      parameters:
+      - default: 10
+        description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: A list of notes with total count
+          schema:
+            $ref: '#/definitions/handlers.PaginatedNotesResponse'
+        "400":
+          description: 'Invalid limit or offset parameters (e.g., {\"error\": \"Invalid
+            limit or offset parameters\"})'
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to count
+            notes\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all notes for the authenticated user
+      tags:
+      - notes
+    post:
+      consumes:
+      - application/json
+      description: Add a new note for the authenticated user
+      parameters:
+      - description: Note data
+        in: body
+        name: note
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateNoteInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Note'
+        "400":
+          description: 'Invalid input (e.g., {\"error\": \"Invalid input: ...\"})'
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to create
+            note\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new note
+      tags:
+      - notes
+  /notes/{id}:
+    delete:
+      description: Deletes a specific note by its ID, if it belongs to the authenticated
+        user
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Note deleted successfully (e.g., {\"message\": \"Note deleted
+            successfully\"})'
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "404":
+          description: Note not found or access denied
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to delete
+            note\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a note by ID
+      tags:
+      - notes
+    get:
+      description: Retrieves a specific note by its ID, if it belongs to the authenticated
+        user
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Note'
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "404":
+          description: 'Note not found or access denied (e.g., {\"error\": \"Note
+            not found or access denied\"})'
+          schema:
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a single note by ID
+      tags:
+      - notes
+    put:
+      consumes:
+      - application/json
+      description: Updates a specific note by its ID, if it belongs to the authenticated
+        user
+      parameters:
+      - description: Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated note data
+        in: body
+        name: note
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateNoteInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Note'
+        "400":
+          description: Invalid input
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "404":
+          description: Note not found or access denied
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to update
+            note\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing note
+      tags:
+      - notes
+  /users/me:
+    get:
+      description: Get profile information for the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "401":
+          description: 'Unauthorized (e.g., {\"error\": \"User ID not found in token\"})'
+          schema:
+            type: object
+        "404":
+          description: 'User not found (e.g., {\"error\": \"User not found\"})'
+          schema:
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get current user's profile
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update profile information for the authenticated user
+      parameters:
+      - description: Profile Update Data
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateUserProfileInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: 'Invalid input (e.g., {\"error\": \"Возраст должен быть корректным
+            положительным числом\"})'
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "404":
+          description: User not found
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to update
+            profile\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update current user's profile
+      tags:
+      - users
+  /users/me/password:
+    post:
+      consumes:
+      - application/json
+      description: Change password for the authenticated user
+      parameters:
+      - description: Password Change Data
+        in: body
+        name: passwords
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ChangePasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Password changed successfully (e.g., {\"message\": \"Password
+            changed successfully\"})'
+          schema:
+            type: object
+        "400":
+          description: 'Invalid input (e.g., {\"error\": \"Новые пароли не совпадают\"})'
+          schema:
+            type: object
+        "401":
+          description: 'Unauthorized or incorrect current password (e.g., {\"error\":
+            \"Incorrect current password\"})'
+          schema:
+            type: object
+        "404":
+          description: User not found
+          schema:
+            type: object
+        "500":
+          description: 'Internal server error (e.g., {\"error\": \"Failed to update
+            password\"})'
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Change current user's password
+      tags:
+      - users
+  /weather:
+    get:
+      description: Fetches current weather information from OpenWeatherMap, WeatherAPI.com,
+        and Open-Meteo.
+      parameters:
+      - description: City name to fetch weather for
+        example: '"London"'
+        in: query
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WeatherResponse'
+        "400":
+          description: 'City parameter is missing (e.g., {\"error\": \"City parameter
+            is required\"})'
+          schema:
+            type: object
+        "500":
+          description: 'Failed to fetch weather data or all sources failed (e.g.,
+            {\"error\": \"Failed to fetch weather data from any source\"})'
+          schema:
+            type: object
+      summary: Get weather data for a city from multiple sources
+      tags:
+      - weather
+securityDefinitions:
+  BearerAuth:
+    description: 'Type "Bearer" followed by a space and JWT token. Example: "Bearer
+      {token}"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
